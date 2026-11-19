@@ -8,7 +8,7 @@ function ensureSquads(){
  if(!Array.isArray(state.squads)||state.squads.length!==3) state.squads=squadNames.map((name,i)=>({name,units:[],command:"공격"}));
  state.squads.forEach((s,i)=>{if(!s.name)s.name=squadNames[i];if(!Array.isArray(s.units))s.units=[];});
 }
-function allAssigned(id,except){return state.squads.some((s,i)=>i!==except&&s.units.includes(id));}
+function allAssigned(id,except){return state.squads.some((s,i)=>s.units.includes(id));}
 function squadSetup(){
  ensureSquads();
  var html='<div class="war-panel"><div class="war-heading"><div><span class="eyebrow">LEGION ORGANIZATION</span><h2>군단 편성</h2><p>각 부대는 최대 3마리로 구성돼. 전투 중에는 부대 전체를 하나의 단위로 지휘해.</p></div><div class="war-chip">3개 부대 · 부대당 3마리</div></div><div class="squad-setup-grid">';
@@ -50,7 +50,7 @@ function makeEnemySquad(i){
   var hp=Math.round(base.hp*scale*(j===0?1.25:.82));
   members.push({id:"enemy-"+i+"-"+j,name:base.name+(j===0?" 우두머리":j===1?" 파수꾼":" 추격자"),side:1,max:hp,hp:hp,atk:Math.round(base.atk*scale*(j===0?1.15:1)),def:Math.round(base.def*scale),speed:1+((j===2)?.25:0),cd:Math.random()*.8,alive:true,kind:base.kind,color:base.color});
  }
- return {id:"enemy-squad-"+i,name:base.name,kind:base.kind,color:base.color,x:850,y:145+i*140,targetX:850,targetY:145+i*140,command:"공격",members:members,selected:false,cool:0};
+ return {id:"enemy-squad-"+i,side:1,name:base.name,kind:base.kind,color:base.color,x:850,y:145+i*140,targetX:850,targetY:145+i*140,command:"공격",members:members,selected:false,cool:0};
 }
 function start(){
  ensureSquads();
