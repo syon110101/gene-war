@@ -1,0 +1,16 @@
+/* Original dark-fantasy creature portrait renderer */
+(function(){
+"use strict";
+var oldSprite=sprite;
+function sprite(u){
+ var a=expressed(u.g,"A"),b=expressed(u.g,"B"),c=expressed(u.g,"C");
+ var main=a?"#5d9fc4":b?"#b16f55":"#8b80b6",dark=a?"#1d405e":b?"#512b35":"#332e50",light=a?"#bcecff":b?"#ffd0a0":"#d9c9ff";
+ var wings=c?'<path d="M57 101Q-7 11 14 115L46 132L70 119Z" fill="url(#wing)" stroke="'+light+'" stroke-width="3"/><path d="M103 101Q167 11 146 115L114 132L90 119Z" fill="url(#wing)" stroke="'+light+'" stroke-width="3"/><path d="M60 104L19 44M57 117L18 111M100 104L141 44M103 117L142 111" stroke="'+light+'" opacity=".55" stroke-width="2"/>':'<path d="M57 103Q16 53 24 125L59 129ZM103 103Q144 53 136 125L101 129Z" fill="url(#wing)" stroke="'+light+'" stroke-width="3"/>';
+ var armor=b?'<path d="M43 89L55 71L69 83L81 68L95 83L109 71L121 94L110 119L80 132L50 119Z" fill="#d6d9d7" stroke="#fff0d5" stroke-width="2"/><path d="M56 91L67 103L80 92L94 103L105 91" fill="none" stroke="#6e5961" stroke-width="4"/>':'<path d="M51 93L61 84L72 95L83 83L95 95L106 85L114 101L104 118L80 126L56 116Z" fill="'+dark+'" stroke="'+light+'" stroke-width="2"/>';
+ return '<svg class="sprite monster-portrait" viewBox="0 0 160 165" role="img" aria-label="판타지 생명체"><defs><radialGradient id="body'+(a?'a':b?'b':'c')+'" cx="35%" cy="25%"><stop stop-color="'+light+'"/><stop offset=".38" stop-color="'+main+'"/><stop offset="1" stop-color="'+dark+'"/></radialGradient><linearGradient id="wing" x2="1" y2="1"><stop stop-color="'+main+'"/><stop offset="1" stop-color="'+dark+'"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><ellipse cx="80" cy="153" rx="46" ry="7" fill="#050a13" opacity=".8"/>'+wings+'<path d="M112 115Q151 131 143 153Q133 143 125 143Q127 129 103 127" fill="none" stroke="'+dark+'" stroke-width="12" stroke-linecap="round"/><path d="M43 112L34 145L53 140L65 116M117 112L126 145L107 140L95 116" fill="'+dark+'" stroke="'+light+'" stroke-width="2"/><path d="M39 87Q29 51 60 43L70 26L83 39L99 24L109 48Q136 62 122 103L110 128Q80 146 51 127Z" fill="url(#body'+(a?'a':b?'b':'c')+')" stroke="'+light+'" stroke-width="2.5"/>'+armor+'<path d="M51 54Q30 21 45 8Q52 33 69 42M107 52Q130 18 119 6Q111 31 93 42" fill="'+light+'" stroke="'+dark+'" stroke-width="3"/><path d="M50 69Q64 59 74 70M86 70Q99 59 111 69" fill="none" stroke="'+dark+'" stroke-width="5"/><ellipse cx="64" cy="77" rx="7" ry="4" fill="#fff0a9" filter="url(#glow)"/><ellipse cx="96" cy="77" rx="7" ry="4" fill="#fff0a9" filter="url(#glow)"/><path d="M67 97Q80 108 93 97L87 111L73 111Z" fill="#1a1019"/><path d="M71 101L75 112L80 103L85 112L89 101" fill="#fff0dd"/><path d="M47 119L56 130L67 121L80 135L94 121L105 130L114 117" fill="none" stroke="'+light+'" stroke-width="3"/><path d="M80 116L75 128L80 136L85 128Z" fill="'+light+'" opacity=".9"/></svg>';
+}
+window.sprite=sprite;
+var css=document.createElement("style");
+css.textContent='.monster-portrait{width:100%;max-width:175px;height:160px;filter:drop-shadow(0 9px 12px #0009)}.creature{background:linear-gradient(155deg,#202f48,#111a2b 70%);border-color:#435878}.creature .title{color:#f4e8d1}.creature .tag{background:#2a3d57}';
+document.head.appendChild(css);
+})();
