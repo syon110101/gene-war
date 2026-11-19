@@ -390,10 +390,5 @@
   };
   battleView = battleScreen;
   fight = startBattle;
-  document.addEventListener("click", function (event) {
-    if (event.target && event.target.matches("#nav button")) {
-      if (battle && battle.result === null) battle = null;
-    }
-  });
   render();
 })();
