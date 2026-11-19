@@ -68,7 +68,8 @@
     return labels[status.type] || status.type;
   }
   function applyStartTurn(unit) {
-    if (unit.hp <= 0) return;
+    if (unit.hp <= 0) return false;
+    var frozenAtStart = unit.status.some(function (s) { return s.type === "freeze"; });
     unit.guarding = false;
     unit.status.slice().forEach(function (s) {
       if (s.type === "poison" || s.type === "burn") {
@@ -84,6 +85,7 @@
       s.turns -= 1;
     });
     unit.status = unit.status.filter(function (s) { return s.turns > 0; });
+    return frozenAtStart;
   }
   function damage(target, amount) {
     var value = Math.max(1, Math.round(amount));
@@ -266,11 +268,9 @@
     battleBusy = true;
     battle.enemies.forEach(function (enemy) {
       if (enemy.hp <= 0 || !alive(battle.allies).length) return;
-      applyStartTurn(enemy);
+      var frozen = applyStartTurn(enemy);
       if (enemy.hp <= 0) return;
-      var frozen = enemy.status.some(function (s) { return s.type === "freeze"; });
       if (frozen) {
-        enemy.status = enemy.status.filter(function (s) { return s.type !== "freeze"; });
         log(enemy.name + "은(는) 빙결되어 행동하지 못했습니다.");
         return;
       }
@@ -292,16 +292,24 @@
     battle.allies.forEach(function (ally) {
       ally.acted = false;
       ally.energy = Math.min(ally.maxEnergy, ally.energy + 1);
-      applyStartTurn(ally);
+      if (applyStartTurn(ally)) {
+        ally.acted = true;
+        log(ally.name + "은(는) 빙결되어 이번 라운드에 행동하지 못합니다.");
+      }
     });
     if (endCheck()) { battleBusy = false; return; }
     battle.enemies.forEach(function (enemy) {
       enemy.acted = false;
       enemy.energy = Math.min(enemy.maxEnergy, enemy.energy + 1);
     });
-    battle.active = battle.allies.findIndex(function (a) { return a.hp > 0; });
+    battle.active = battle.allies.findIndex(function (a) { return a.hp > 0 && !a.acted; });
     battle.phase = "player";
     battleBusy = false;
+    if (battle.active < 0) {
+      log("모든 아군이 행동 불가 상태입니다. 적의 차례로 넘어갑니다.");
+      enemyPhase();
+      return;
+    }
     render();
   }
   function battleUnitCard(u, side, index) {
@@ -330,10 +338,10 @@
     } else if (battle.phase === "player" && actor) {
       controls = '<div class="battle-controls"><div class="turn-heading">ROUND ' + battle.round + ' · ' + actor.name + '의 행동</div>' +
         '<div class="action-grid">' +
-        '<button onclick="battleAct(\\'attack\\')">⚔️ 기본 공격<small>에너지 +1</small></button>' +
-        '<button onclick="battleAct(\\'defend\\')">🛡️ 방어<small>피해 감소 · 보호막</small></button>' +
-        '<button onclick="battleAct(\\'skill\\')" ' + (actor.energy < 2 ? "disabled" : "") + '>✨ 유전자 스킬<small>에너지 2 · 강력한 공격</small></button>' +
-        '<button onclick="battleAct(\\'gene\\')" ' + (actor.energy < 3 ? "disabled" : "") + '>🧬 고유 유전자<small>에너지 3 · 개체별 효과</small></button>' +
+        '<button onclick="battleAct(&quot;attack&quot;)">⚔️ 기본 공격<small>에너지 +1</small></button>' +
+        '<button onclick="battleAct(&quot;defend&quot;)">🛡️ 방어<small>피해 감소 · 보호막</small></button>' +
+        '<button onclick="battleAct(&quot;skill&quot;)" ' + (actor.energy < 2 ? "disabled" : "") + '>✨ 유전자 스킬<small>에너지 2 · 강력한 공격</small></button>' +
+        '<button onclick="battleAct(&quot;gene&quot;)" ' + (actor.energy < 3 ? "disabled" : "") + '>🧬 고유 유전자<small>에너지 3 · 개체별 효과</small></button>' +
         '</div><p class="muted">행동을 선택하면 다음 아군의 차례로 넘어갑니다. 모든 아군이 행동하면 적이 반격합니다.</p></div>';
     } else {
       controls = '<div class="battle-controls"><h3>적의 차례</h3><p>상대 군단이 행동하고 있습니다...</p></div>';
