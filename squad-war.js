@@ -14,7 +14,7 @@ function squadSetup(){
  var html='<div class="war-panel"><div class="war-heading"><div><span class="eyebrow">LEGION ORGANIZATION</span><h2>군단 편성</h2><p>각 부대는 최대 3마리로 구성돼. 전투 중에는 부대 전체를 하나의 단위로 지휘해.</p></div><div class="war-chip">3개 부대 · 부대당 3마리</div></div><div class="squad-setup-grid">';
  state.squads.forEach((s,i)=>{
   html+='<div class="squad-setup squad-'+i+'"><div class="squad-title"><span class="squad-symbol">'+["Ⅰ","Ⅱ","Ⅲ"][i]+'</span><div><b>'+s.name+'</b><small>'+s.units.length+'/3 배치</small></div></div>';
-  for(var j=0;j<3;j++){
+  for(var j=0;j<2;j++){
    var id=s.units[j]||"", opts='<option value="">비어 있음</option>'+state.units.map(u=>'<option value="'+u.id+'" '+(id===u.id?'selected':'')+'>'+u.name+' · Lv.'+u.level+'</option>').join("");
    html+='<label class="member-slot"><span>구성원 '+(j+1)+'</span><select onchange="GW.assign('+i+','+j+',this.value)">'+opts+'</select></label>';
   }
@@ -40,9 +40,9 @@ function makeMember(u,side){
 }
 function makeEnemySquad(i){
  var types=[
-  {name:"황혼의 파멸룡",kind:"dragon",hp:170,atk:22,def:9,color:0},
-  {name:"흑요석 마귀군",kind:"demon",hp:210,atk:18,def:14,color:1},
-  {name:"핏빛 심연수",kind:"beast",hp:145,atk:27,def:7,color:2}
+  {name:"황혼의 파멸룡",kind:"dragon",hp:50,atk:4,def:2,color:0},
+  {name:"흑요석 마귀군",kind:"demon",hp:58,atk:4,def:3,color:1},
+  {name:"핏빛 심연수",kind:"beast",hp:46,atk:5,def:2,color:2}
  ];
  var base=types[(state.stage+i-1)%types.length],scale=1+state.stage*.12;
  var members=[];
