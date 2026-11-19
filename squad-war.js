@@ -28,7 +28,7 @@ function battleScreen(){
  if(!war)return squadSetup();
  var html='<div class="war-panel battlefield-panel"><div class="war-heading"><div><span class="eyebrow">LIVE TACTICAL WARFARE · STAGE '+state.stage+'</span><h2>전장 지휘실</h2><p>아군 부대를 선택한 뒤 전장이나 적 부대를 클릭해 명령을 내려.</p></div><div class="war-chip">전투 시간 <b id="war-clock">0:00</b></div></div>';
  html+='<div class="battlefield-wrap"><canvas id="war-canvas" width="1100" height="570" aria-label="실시간 군단 전투 전장"></canvas><div class="battle-overlay"><span>아군 진영</span><span>적 진영</span></div></div>';
- html+='<div class="war-command-bar"><div class="selected-info"><b id="war-selected">부대를 선택해</b><small id="war-command-state">전장을 클릭하면 명령을 내릴 수 있어</small></div><div class="command-buttons"><button onclick="GW.command(\\'공격\\')">⚔ 공격</button><button onclick="GW.command(\\'방어\\')">🛡 방어</button><button onclick="GW.command(\\'이동\\')">➤ 이동</button><button onclick="GW.command(\\'후퇴\\')">↩ 후퇴</button><button class="skill-command" onclick="GW.command(\\'특수기\\')">✦ 부대 특수기</button></div><button class="pause-button" onclick="GW.pause()" id="war-pause">Ⅱ 일시정지</button></div>';
+ html+='<div class="war-command-bar"><div class="selected-info"><b id="war-selected">부대를 선택해</b><small id="war-command-state">전장을 클릭하면 명령을 내릴 수 있어</small></div><div class="command-buttons"><button onclick="GW.command(\'공격\')">⚔ 공격</button><button onclick="GW.command(\'방어\')">🛡 방어</button><button onclick="GW.command(\'이동\')">➤ 이동</button><button onclick="GW.command(\'후퇴\')">↩ 후퇴</button><button class="skill-command" onclick="GW.command(\'특수기\')">✦ 부대 특수기</button></div><button class="pause-button" onclick="GW.pause()" id="war-pause">Ⅱ 일시정지</button></div>';
  html+='<div class="war-status-grid"><div><b>아군 부대</b><div id="war-allies" class="status-list"></div></div><div><b>적 군단</b><div id="war-enemies" class="status-list"></div></div></div>';
  html+='<div class="war-log" id="war-log"></div></div>';
  if(war.done)html+='<div class="war-result"><h2>'+(war.won?'승리!':'패배')+'</h2><p>'+(war.won?'적 군단을 격파했어. 생존한 생명체가 경험치를 얻었어.':'군단이 무너졌어. 부대 편성과 유전자 조합을 바꿔 다시 도전해 봐.')+'</p><button class="primary" onclick="GW.close()">전투 결과 확인</button></div>';
@@ -59,7 +59,7 @@ function start(){
  war={allies:[],enemies:[],selected:0,paused:false,done:false,won:false,elapsed:0,logs:["전투 개시! 부대를 선택하고 명령을 내려."],lastLog:0,stage:state.stage};
  state.squads.forEach((s,i)=>{
   var members=s.units.map(id=>unit(id)).filter(Boolean).map(u=>makeMember(u,0));
-  if(members.length)war.allies.push({id:"ally-"+i,name:s.name,x:210,y:145+i*140,targetX:210,targetY:145+i*140,command:"공격",members:members,selected:false,cool:0,index:i});
+  if(members.length)war.allies.push({id:"ally-"+i,side:0,name:s.name,x:210,y:145+i*140,targetX:210,targetY:145+i*140,command:"공격",members:members,selected:false,cool:0,index:i});
  });
  for(var i=0;i<3;i++)war.enemies.push(makeEnemySquad(i));
  war.selected=0;
@@ -255,7 +255,7 @@ function autoAssign(){
 }
 function assign(si,mi,id){
  ensureSquads();if(id&&allAssigned(id,si)){toast("한 생명체를 여러 부대에 중복 배치할 수 없어.");render();return;}
- var s=state.squads[si];s.units[mi]=id||null;s.units=s.units.filter(Boolean);
+ var s=state.squads[si];if(id&&s.units[mi]!==id&&allAssigned(id,si)){toast("한 생명체는 한 부대에만 배치할 수 있어.");render();return;}s.units[mi]=id||null;s.units=s.units.filter(Boolean);
  // preserve selected slot order while compacting
  save();render();
 }
